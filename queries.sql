@@ -30,6 +30,8 @@ INNER JOIN payment p
 ON staff.staff_id = p.staff_id
 GROUP BY store_id
 
+-- Rafa lo hizo directamente con payment y store y le salia distinto
+
 --4. Determine the average running time of films for each category.
 
 SELECT c.name as 'category', avg(f.length) 'avg_time'
@@ -66,7 +68,7 @@ LIMIT 10
 
 SELECT CASE
 	WHEN 'Academy Dinosaur' IN (
-		SELECT title
+		SELECT DISTINCT title
         FROM film f
         INNER JOIN inventory i
         ON f.film_id = i.film_id
@@ -77,6 +79,16 @@ SELECT CASE
 	ELSE 'No'
 END AS 'Can I?'
 
+-- ALT sin subquery
+SELECT 
+    CASE 
+        WHEN COUNT(i.inventory_id) > 0 THEN 'Yes'
+        ELSE 'No'
+    END AS available
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+WHERE f.title = 'Academy Dinosaur' AND i.store_id = 1;
+
 --8. Provide a list of all distinct film titles, along with their availability status in the inventory. Include a column indicating whether each title is 'Available' or 'NOT available.' Note that there are 42 titles that are not in the inventory, and this information can be obtained using a CASE statement combined with IFNULL."
 
 SELECT DISTINCT f.title, CASE
@@ -84,7 +96,8 @@ SELECT DISTINCT f.title, CASE
     ELSE 'Avaliable'
 END AS 'Status'
 FROM film f
-LEFT JOIN inventory i ON f.film_id = i.film_id
+LEFT JOIN inventory i 
+ON f.film_id = i.film_id
 
 
 
